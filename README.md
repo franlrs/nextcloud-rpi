@@ -28,6 +28,48 @@ Private cloud infrastructure deployment using **Docker Compose**. This project e
 
 ### 💡 The Architecture (How it works)
 
+```mermaid
+graph TD
+    %% Estilos
+    classDef user fill:#2c3e50,stroke:#fff,stroke-width:2px,color:white;
+    classDef container fill:#0082D9,stroke:#fff,stroke-width:2px,color:white;
+    classDef db fill:#e1b12c,stroke:#fff,stroke-width:2px,color:white;
+    classDef vol fill:#95a5a6,stroke:#333,stroke-width:2px,stroke-dasharray: 5 5;
+
+    subgraph World ["🌍 External World (WAN)"]
+        Client["📱 Mobile / Laptop"]
+    end
+
+    subgraph RPi ["🍓 Raspberry Pi 5 (Host)"]
+        Tailscale["🚇 Tailscale Interface"]
+        
+        subgraph Docker ["🐳 Docker Network"]
+            NC["Nextcloud App"]
+            MDB[("MariaDB")]
+        end
+
+        %% Persistencia
+        Vol1["💾 nextcloud_data"]
+        Vol2["💾 db_data"]
+    end
+
+    %% Conexiones
+    Client ==>|"Encrypted Tunnel (VPN)"| Tailscale
+    Tailscale -.->|"Port 8080:80"| NC
+    NC <-->|"Internal DNS (db:3306)"| MDB
+    
+    %% Volumenes
+    NC --- Vol1
+    MDB --- Vol2
+
+    %% Asignación de Clases
+    class Client,Tailscale user
+    class NC container
+    class MDB db
+    class Vol1,Vol2 vol
+
+```
+
 Unlike a standard installation, this system is fully containerized to be modular and resilient.
 
 | Component | Technical Role | "Human" Description |
@@ -68,6 +110,7 @@ Managed via **Docker Compose**.
 volumes:
   - nextcloud_data:/var/www/html  # User Data (Photos/Docs)
   - db_data:/var/lib/mysql        # SQL Data (Indexes)
+
 ```
 
 ---
@@ -79,8 +122,9 @@ To replicate this environment:
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/franlrs/nextcloud-rpi.git
+git clone [https://github.com/franlrs/nextcloud-rpi.git](https://github.com/franlrs/nextcloud-rpi.git)
 cd nextcloud-rpi
+
 ```
 
 2. **Security (Environment Variables):**
@@ -89,12 +133,14 @@ Rename the example file and set your secure passwords.
 ```bash
 cp env.example .env
 nano .env
+
 ```
 
 3. **Deploy:**
 
 ```bash
 docker compose up -d
+
 ```
 
 4. **Access:**
@@ -106,4 +152,4 @@ docker compose up -d
 
 ### 📄 License
 
-Project developed by **franlrs**. Distributed under the [MIT License](LICENSE).
+Project developed by **franlrs**. Distributed under the [MIT License](https://www.google.com/search?q=LICENSE).
