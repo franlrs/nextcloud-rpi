@@ -1,0 +1,49 @@
+services:
+  # --- DATABASE SERVICE
+  db:
+    image: mariadb:10.6  # Database version
+    container_name: nextcloud_db
+    restart: always # Auto-restart policy (on boot or failure)
+    ports:            
+      - 3306:3306     
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW # Mandatory optimization for Nextcloud performance
+    volumes:
+      - db_data:/var/lib/mysql # Persistence: Maps internal data to external volume 'db_data'
+    environment:
+      # Credentials loaded from .env file
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS}
+      - MYSQL_PASSWORD=${MYSQL_DB_PASS}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    networks:
+      - nube-net # Connects to private network 'nube-net'
+
+  # --- NEXTCLOUD APP
+  app:
+    image: nextcloud
+    container_name: nextcloud_app
+    restart: always # Ensures high availability
+    ports:
+      - 8080:80  # Port Mapping: Host 8080 -> Container 80
+    depends_on:
+      - db  # Wait for DB to fully start before launching app
+    volumes:
+      - nextcloud_data:/var/www/html # Persistence: User files (photos/docs) stored here
+    environment:
+      # Auto-configuration for DB connection
+      - MYSQL_PASSWORD=${MYSQL_DB_PASS}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db # Connects via Service Name (Internal DNS resolution)
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASS}
+    networks:
+      - nube-net
+
+# --- INFRASTRUCTURE
+volumes:
+  db_data:        # Persistent volume for Database storage
+  nextcloud_data: # Persistent volume for User Files
+
+networks:
+  nube-net:       # Private virtual network for container communication
