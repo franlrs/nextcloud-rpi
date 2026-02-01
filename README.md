@@ -1,5 +1,12 @@
 # ☁️ Private Self-Hosted Cloud (Raspberry Pi 5)
 
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Raspberry Pi](https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)
+![Nextcloud](https://img.shields.io/badge/Nextcloud-0082D9?style=for-the-badge&logo=nextcloud&logoColor=white)
+![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
+![Tailscale](https://img.shields.io/badge/Tailscale-18181B?style=for-the-badge&logo=tailscale&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
 Private cloud infrastructure deployment using **Docker Compose**. This project eliminates reliance on third-party services (Google Drive/iCloud), ensuring **data sovereignty** and secure remote access even behind a restrictive university network (CGNAT).
 
 <div align="center">
